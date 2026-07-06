@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Blogs</title>
+</head>
+<body>
+  <h1>All Blogs</h1>
+  <div id="blogs-container"></div>
+
+  <script>
+    const container = document.getElementById('blogs-container');
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTIxY2Y1NzVlMmFhMTMxOTZjMjQ4ZSIsImlhdCI6MTc1NTU0MjE4NiwiZXhwIjoxNzU1NjI4NTg2fQ.H9mqsnrSAakYc17b9YHt9x4qqXalMGvoKUYDvXOBGHI"; // <-- replace with your actual token
+
+    // Fetch all blogs with Authorization header
+    fetch('http://localhost:3000/api/blog/', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(blogs => {
+        blogs.forEach(blog => {
+          const blogDiv = document.createElement('div');
+          blogDiv.style.border = '1px solid #ccc';
+          blogDiv.style.padding = '10px';
+          blogDiv.style.margin = '10px 0';
+
+          const title = document.createElement('h2');
+          title.textContent = blog.title;
+          blogDiv.appendChild(title);
+
+          const author = document.createElement('p');
+          author.textContent = `By: ${blog.author.username}`;
+          blogDiv.appendChild(author);
+
+          const content = document.createElement('div');
+          content.innerHTML = blog.content;
+          blogDiv.appendChild(content);
+
+          const tags = document.createElement('p');
+          tags.textContent = 'Tags: ' + blog.tags.join(', ');
+          blogDiv.appendChild(tags);
+
+          container.appendChild(blogDiv);
+        });
+      })
+      .catch(err => console.error('Error fetching blogs:', err));
+  </script>
+</body>
+</html>
