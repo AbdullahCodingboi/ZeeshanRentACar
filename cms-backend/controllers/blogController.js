@@ -49,7 +49,7 @@ const parseNumber = (value) => {
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
 };
-
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const parseRange = (value) => {
   if (!value) return null;
   const normalized = String(value).trim();
@@ -76,7 +76,7 @@ const parseList = (value) => {
 const buildCarFilters = (query) => {
   const filters = {};
   if (query.search) {
-    const searchText = new RegExp(query.search, "i");
+    const searchText = new RegExp(escapeRegex(query.search), "i");
     filters.$or = [
       { brand: searchText },
       { model: searchText },
@@ -85,14 +85,11 @@ const buildCarFilters = (query) => {
       { description: searchText },
     ];
   }
-  if (query.brand) filters.brand = new RegExp(query.brand, "i");
-  if (query.model) filters.model = new RegExp(query.model, "i");
-  if (query.carType) filters.carType = query.carType;
-  if (query.city) filters.city = new RegExp(query.city, "i");
-  if (query.fuelType) filters.fuelType = query.fuelType;
-  if (query.transmission) filters.transmission = query.transmission;
-  if (query.condition) filters.condition = query.condition;
-  if (query.driverOption) filters.driverOption = query.driverOption;
+ if (query.carType) filters.carType = new RegExp(`^${escapeRegex(query.carType)}$`, "i");
+if (query.fuelType) filters.fuelType = new RegExp(`^${escapeRegex(query.fuelType)}$`, "i");
+if (query.transmission) filters.transmission = new RegExp(`^${escapeRegex(query.transmission)}$`, "i");
+if (query.condition) filters.condition = new RegExp(`^${escapeRegex(query.condition)}$`, "i");
+if (query.driverOption) filters.driverOption = new RegExp(`^${escapeRegex(query.driverOption)}$`, "i");
   if (query.tags) {
     const tagArray = parseList(query.tags);
     if (tagArray.length) filters.tags = { $in: tagArray };

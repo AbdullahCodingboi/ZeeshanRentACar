@@ -13,7 +13,7 @@
     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YTIxY2Y1NzVlMmFhMTMxOTZjMjQ4ZSIsImlhdCI6MTc1NTU0MjE4NiwiZXhwIjoxNzU1NjI4NTg2fQ.H9mqsnrSAakYc17b9YHt9x4qqXalMGvoKUYDvXOBGHI"; // <-- replace with your actual token
 
     // Fetch all blogs with Authorization header
-    fetch('http://localhost:3000/api/blog/', {
+    fetch('/api/blog/', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
