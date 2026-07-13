@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  username: {
+  name: {
     type: String,
-    unique: true,
     required: true,
   },
   email: {
@@ -30,6 +29,18 @@ const userSchema = new mongoose.Schema({
   bio: {
     type: String,
     default: "",
+  },
+  // Email verification
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    default: "",
+  },
+  verificationTokenExpires: {
+    type: Date,
   },
   createdAt: {
     type: Date,

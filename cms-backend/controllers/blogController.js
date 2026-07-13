@@ -224,7 +224,7 @@ export const CreateBlog = async (req, res) => {
 
 export const GetBlog = async (req, res) => {
   try {
-    const car = await Car.findById(req.params.id).populate("owner", "username email phone whatsapp city");
+    const car = await Car.findById(req.params.id).populate("owner", "name email phone whatsapp city");
     if (!car) {
       return res.status(404).json({ message: "Car not found" });
     }
@@ -243,7 +243,7 @@ export const GetAllBlog = async (req, res) => {
 
     const total = await Car.countDocuments(filters);
     const cars = await Car.find(filters)
-      .populate("owner", "username email phone whatsapp city")
+      .populate("owner", "name email phone whatsapp city")
       .sort(sort)
       .skip((page - 1) * limit)
       .limit(limit);
@@ -460,7 +460,7 @@ export const GetMyRentals = async (req, res) => {
   try {
     const rentals = await Rental.find({ renter: req.user.id })
       .populate("car", "brand model year city rentalPricePerDay availabilityStatus")
-      .populate("owner", "username email phone whatsapp city")
+      .populate("owner", "name email phone whatsapp city")
       .sort({ createdAt: -1 });
 
     res.json({ success: true, rentals });
@@ -478,7 +478,7 @@ export const GetOwnerRequests = async (req, res) => {
 
     const requests = await Rental.find(filters)
       .populate("car", "brand model year city rentalPricePerDay availabilityStatus")
-      .populate("renter", "username email phone whatsapp city")
+      .populate("renter", "name email phone whatsapp city")
       .sort({ createdAt: -1 });
 
     res.json({ success: true, requests });
