@@ -49,7 +49,23 @@ export const Signup = async (req, res) => {
       html: `<p>Hi ${user.name},</p><p>Please verify your email by clicking the link below:</p><p><a href="${verifyUrl}">${verifyUrl}</a></p><p>This link expires in 24 hours.</p>`,
     };
 
-    transporter.sendMail(mailOptions).catch((err) => console.error("Email send error:", err));
+    // transporter.sendMail(mailOptions).catch((err) => console.error("Email send error:", err));
+try {
+  console.log("Connecting to SMTP...");
+
+  await transporter.verify();
+  console.log("SMTP connection verified.");
+
+  const info = await transporter.sendMail(mailOptions);
+  console.log("Email sent successfully:", info.messageId);
+} catch (err) {
+  console.error("SMTP ERROR:", err);
+
+  return res.status(500).json({
+    message: "Failed to send verification email",
+    error: err.message,
+  });
+}
 
     res.status(201).json({ message: "User created. Verification email sent.", user: { id: user._id, name: user.name, email: user.email } });
   } catch (err) {
