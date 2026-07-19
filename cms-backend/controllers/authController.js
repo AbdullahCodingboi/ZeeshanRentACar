@@ -94,11 +94,11 @@ export const Login = async (req, res) => {
       return res.status(403).json({ message: "Email not verified. Check your inbox." });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
 
-    res.json({ message: "Logged in", token, user: { id: user._id, name: user.name, email: user.email } });
+    res.json({ message: "Logged in", token, user: { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

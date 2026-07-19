@@ -117,9 +117,13 @@ if (query.driverOption) filters.driverOption = new RegExp(`^${escapeRegex(query.
     }
   }
 
+  // Always filter to verified cars for public-facing queries
+  // Admin callers should use /api/admin/cars instead
   if (!query.showAll || query.showAll !== "true") {
     filters.availabilityStatus = filters.availabilityStatus || "available";
   }
+  // Only show verified (admin-approved) posts to everyone via the public API
+  filters.isVerified = true;
 
   return filters;
 };
@@ -212,10 +216,11 @@ export const CreateBlog = async (req, res) => {
       whatsappContact,
       owner: req.user.id,
       images: uploadedImages,
+      isVerified: false, // requires admin approval before going public
       datePosted: new Date(),
     });
 
-    res.status(201).json({ success: true, car });
+    res.status(201).json({ success: true, message: "Car listing created and pending admin approval.", car });
   } catch (err) {
     console.error("CreateCar error:", err);
     res.status(500).json({ success: false, error: err.message });
@@ -226,6 +231,10 @@ export const GetBlog = async (req, res) => {
   try {
     const car = await Car.findById(req.params.id).populate("owner", "name email phone whatsapp city");
     if (!car) {
+      return res.status(404).json({ message: "Car not found" });
+    }
+    // Unverified cars are only visible to admins
+    if (!car.isVerified && !(req.user && req.user.isAdmin)) {
       return res.status(404).json({ message: "Car not found" });
     }
     res.json({ success: true, car });
@@ -267,7 +276,8 @@ export const UpdateBlog = async (req, res) => {
     if (!car) {
       return res.status(404).json({ message: "Car listing not found" });
     }
-    if (car.owner.toString() !== req.user.id) {
+    // Admins can update any car; regular users only their own
+    if (!req.user.isAdmin && car.owner.toString() !== req.user.id) {
       return res.status(403).json({ message: "Not authorized to update this listing" });
     }
 
@@ -334,7 +344,8 @@ export const DeleteBlog = async (req, res) => {
     if (!car) {
       return res.status(404).json({ message: "Car listing not found" });
     }
-    if (car.owner.toString() !== req.user.id) {
+    // Admins can delete any car; regular users only their own
+    if (!req.user.isAdmin && car.owner.toString() !== req.user.id) {
       return res.status(403).json({ message: "Not authorized to delete this listing" });
     }
 
