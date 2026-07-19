@@ -93,6 +93,10 @@ const carSchema = new mongoose.Schema({
     required: true,
   },
   images: [imageSchema],
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   datePosted: {
     type: Date,
     default: Date.now,
